@@ -51,7 +51,9 @@ struct ContentView: View {
                             withAnimation {
                                 animationAmount += 360
                             }
-                            flagTapped(number)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                flagTapped(number)
+                            }
                         } label: {
                             FlagImage(imageName: countries[number])
                                 
