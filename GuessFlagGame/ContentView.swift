@@ -16,6 +16,9 @@ struct ContentView: View {
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Monaco", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
     
+    @State var selection: Int = 0
+    @State private var animationAmount = 0.0
+    
     var body: some View {
         ZStack {
             RadialGradient(stops: [
@@ -41,12 +44,20 @@ struct ContentView: View {
                             .font(.largeTitle.weight(.semibold))
                     }
                     
-                    ForEach (0..<3) { number in
+                    ForEach (1..<4) { number in
+                        let isSelected = self.selection == number
                         Button {
+                            self.selection = number
+                            withAnimation {
+                                animationAmount += 360
+                            }
                             flagTapped(number)
                         } label: {
                             FlagImage(imageName: countries[number])
+                                
                         }
+                        .opacity(self.selection == 0 || isSelected ? 1 : 0.25)
+                        .rotation3DEffect(.degrees(self.animationAmount), axis: (x: isSelected ? 1 : 0, y: isSelected ? 0 : 1, z: 0))
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -81,6 +92,7 @@ struct ContentView: View {
         askQuestion()
         score = 0
         round = 8
+        selection = 0
     }
     
     func flagTapped(_ number: Int) {
@@ -95,18 +107,17 @@ struct ContentView: View {
             score -= 1
         }
         round -= 1
-        
         if round == 0 {
             showingFinishedAlert = true
         } else {
             showingAlert = true
-
         }
     }
     
     func askQuestion() {
         countries = countries.shuffled()
         correctAnswer = Int.random(in: 0...2)
+        selection = 0
     }
 }
 
